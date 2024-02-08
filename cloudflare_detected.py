@@ -1,7 +1,7 @@
 import requests
 
 class CloudflareCheck:
-    def __init__(self, url = 'https://github.com', timeout = 5):
+    def __init__(self, url='https://example.com', timeout=5):
         self.url = url
         self.timeout = timeout
 
@@ -16,20 +16,27 @@ class CloudflareCheck:
                 'CF-Request-ID'
             ]
 
-            for headers in cloudflare_headers:
-                if headers in response.headers:
-                    return True
+            for header in cloudflare_headers:
+                if header in response.headers:
+                    if 'cloudflare' in response.headers[header].lower():
+                        return True
                 
-                return False
+            return False
 
         except Exception as e:
             print("Error occurred:", e)
-            return True
+            return False
     
-checker = CloudflareCheck()
-cloudflare_detected = checker.check_website()
-
-if cloudflare_detected:
-    print("Cloudflare Is Used In This Website .")
-else:
-    print("Cloudflare Is Not Used In This Website ..")
+if __name__ == '__main__':
+    while True:
+        user_input = input("Enter The Website URL (e.g., https://example.com): ").strip()
+        checker = CloudflareCheck(url=user_input)
+        cloudflare_detected = checker.check_website()
+        if cloudflare_detected:
+            print("Cloudflare Is Used In This Website.")
+        else:
+            print("Cloudflare Is Not Used In This Website.")
+        
+        choice = input("Do You Want To Check Another Website? (Y/N): ").strip().lower()
+        if choice != 'y':
+            break
